@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,8 @@ import {
 import axios from "axios";
 
 const TaskTable = ({ tasks, setTasks, userType, deleteTask }) => {
+  const [sortedTasks, setSortedTasks] = useState([]);
+
   // Format dates to be more readable
   const formatDate = (date) => {
     if (!date) return "-";
@@ -21,8 +23,6 @@ const TaskTable = ({ tasks, setTasks, userType, deleteTask }) => {
       day: "numeric",
     });
   };
-
-  
 
   // Handle status toggle and set completion date
   const handleStatusChange = async (taskId, currentStatus) => {
@@ -42,15 +42,30 @@ const TaskTable = ({ tasks, setTasks, userType, deleteTask }) => {
 
     // Send update request to backend
     try {
-      await axios.put(`http://192.168.1.5:5000/tasks/${taskId}`, {
+      await axios.put(`http://192.168.1.10:5000/tasks/${taskId}`, {
         status: updatedStatus,
         completionDate:
-          updatedStatus === "completed" ? new Date().toISOString() : null, // Ensure ISO format
+          updatedStatus === "completed" ? new Date().toISOString() : null,
       });
     } catch (error) {
       console.error("Error updating task status:", error);
     }
   };
+
+  // Memoized sortTasks function
+  const sortTasks = useCallback(() => {
+    const pendingTasks = tasks
+      .filter((task) => task.status === "pending")
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const completedTasks = tasks
+      .filter((task) => task.status === "completed")
+      .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort completed tasks by original date
+    return [...pendingTasks, ...completedTasks];
+  }, [tasks]);
+
+  useEffect(() => {
+    setSortedTasks(sortTasks());
+  }, [sortTasks]); // Ensure `sortTasks` is in the dependency array
 
   return (
     <Table>
@@ -67,11 +82,12 @@ const TaskTable = ({ tasks, setTasks, userType, deleteTask }) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {tasks.map((task) => (
+        {sortedTasks.map((task) => (
           <TableRow
             key={task._id}
             style={{
-              textDecoration: task.status === "completed" ? "line-through" : "none",
+              textDecoration:
+                task.status === "completed" ? "line-through" : "none",
             }}
           >
             <TableCell>{formatDate(task.date)}</TableCell>
@@ -90,7 +106,7 @@ const TaskTable = ({ tasks, setTasks, userType, deleteTask }) => {
               {userType === "owner" && (
                 <Button
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                   onClick={() => deleteTask(task._id)}
                 >
                   Delete

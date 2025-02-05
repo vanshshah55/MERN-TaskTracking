@@ -19,8 +19,8 @@ const AddTaskForm = ({ addTask }) => {
     // Fetch client and employee data to populate dropdowns
     const fetchData = async () => {
       try {
-        const clientsResponse = await axios.get("http://192.168.1.5:5000/api/clients");
-        const employeesResponse = await axios.get("http://192.168.1.5:5000/api/employees");
+        const clientsResponse = await axios.get("http://localhost:5000/api/clients");
+        const employeesResponse = await axios.get("http://localhost:5000/api/employees");
         setClients(clientsResponse.data);
         setEmployees(employeesResponse.data);
       } catch (error) {
