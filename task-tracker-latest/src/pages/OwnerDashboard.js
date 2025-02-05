@@ -46,7 +46,7 @@ const OwnerDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const taskResponse = await axios.get("http://localhost:5000/tasks", {
+        const taskResponse = await axios.get("https://mern-tasktracking-backend.onrender.com/tasks", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -54,14 +54,14 @@ const OwnerDashboard = () => {
         setTasks(taskResponse.data);
         setFilteredTasks(taskResponse.data);
 
-        const clientResponse = await axios.get("http://localhost:5000/clients", {
+        const clientResponse = await axios.get("https://mern-tasktracking-backend.onrender.com/clients", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         setClients(clientResponse.data);
 
-        const employeeResponse = await axios.get("http://localhost:5000/employees", {
+        const employeeResponse = await axios.get("https://mern-tasktracking-backend.onrender.com/employees", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -77,7 +77,7 @@ const OwnerDashboard = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:5000/tasks/${taskId}`, {
+      await axios.delete(`https://mern-tasktracking-backend.onrender.com/tasks/${taskId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -99,7 +99,7 @@ const OwnerDashboard = () => {
   const handleAddTask = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/tasks", newTask, {
+      const response = await axios.post("https://mern-tasktracking-backend.onrender.com/tasks", newTask, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

@@ -19,8 +19,8 @@ const AddTaskForm = ({ addTask }) => {
     // Fetch client and employee data to populate dropdowns
     const fetchData = async () => {
       try {
-        const clientsResponse = await axios.get("http://localhost:5000/api/clients");
-        const employeesResponse = await axios.get("http://localhost:5000/api/employees");
+        const clientsResponse = await axios.get("https://mern-tasktracking-backend.onrender.com/api/clients");
+        const employeesResponse = await axios.get("https://mern-tasktracking-backend.onrender.com/api/employees");
         setClients(clientsResponse.data);
         setEmployees(employeesResponse.data);
       } catch (error) {

@@ -42,7 +42,7 @@ const TaskTable = ({ tasks, setTasks, userType, deleteTask }) => {
 
     // Send update request to backend
     try {
-      await axios.put(`http://192.168.1.10:5000/tasks/${taskId}`, {
+      await axios.put(`https://mern-tasktracking-backend.onrender.com/tasks/${taskId}`, {
         status: updatedStatus,
         completionDate:
           updatedStatus === "completed" ? new Date().toISOString() : null,
