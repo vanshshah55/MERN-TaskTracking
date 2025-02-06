@@ -1,17 +1,35 @@
-
-
-import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Alert, Card, CardContent } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, TextField, Typography, Alert, Card, CardContent, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AccountCircle, Lock } from '@mui/icons-material';
 
 const Login = ({ setUserType }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0); 
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      setProgress(0); // Reset progress
+      interval = setInterval(() => {
+        setProgress((prev) => (prev >= 95 ? prev : prev + 5)); // Increment progress smoothly
+      }, 200);
+    } else {
+      setProgress(0); // Reset on completion
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    
+    
 
     // Prepare login data
     const loginData = {
@@ -32,14 +50,17 @@ const Login = ({ setUserType }) => {
       if (response.ok) {
         console.log('Login Successful:', data);
         setUserType(data.userType);
-        navigate(data.userType === 'owner' ? '/owner-dashboard' : '/employee-dashboard');
+        setProgress(100); // Set progress to 100% on success
+        setTimeout(() => navigate(data.userType === 'owner' ? '/owner-dashboard' : '/employee-dashboard'), 500);
       } else {
         console.error('Login Failed:', data.message);
         setError(data.message);
+        setLoading(false);
       }
     } catch (err) {
       console.error('Error logging in:', err);
       setError('An error occurred during login.');
+      setLoading(false);
     }
   };
 
@@ -111,22 +132,40 @@ const Login = ({ setUserType }) => {
                 ),
               }}
             />
+            {/* Button with Loader */}
             <Button
               type="submit"
               variant="contained"
               fullWidth
+              disabled={loading}
               sx={{
                 bgcolor: '#02457A',
-                '&:hover': {
-                  bgcolor: '#023E6A',
-                },
+                '&:hover': { bgcolor: '#023E6A' },
                 textTransform: 'none',
                 fontSize: '1.1rem',
                 fontWeight: 'bold',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                position: 'relative',
+                height: '50px',
               }}
             >
-              Login
+              {loading ? (
+                <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <CircularProgress 
+                    variant="determinate" 
+                    value={progress} 
+                    size={30} 
+                    sx={{ color: 'white', mr: 1 }} 
+                  />
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 'bold' }}>
+                    {progress}%
+                  </Typography>
+                </Box>
+              ) : 'Login'}
             </Button>
           </Box>
         </CardContent>
